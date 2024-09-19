@@ -1,0 +1,664 @@
+#+title: Rekursion og fraktaler
+#+subtitle: 
+#+author: Jacob Debel
+#+date: 
+#+options: toc:t num:nil tags:t timestamp:nil ^:{} html-postamble:nil
+# #+setupfile: https://fniessen.github.io/org-html-themes/org/theme-bigblow.setup
+# #+setupfile: ./org-html-themes/org/theme-bigblow-local.setup
+#+setupfile: ./theme-bigblow-local.setup
+# #+setupfile: ./theme-readtheorg-local.setup
+#+HTML_HEAD: <style> #content{max-width:1800px;}</style>
+# #+HTML_HEAD: <style> p{max-width:800px;}</style>
+# #+HTML_HEAD: <style> li{max-width:800px;}</style
+#+HTML_HEAD_EXTRA: <style> pre.src { background-color: black; color: white; }</style>
+* Sierpinskis tetrahedron
+#+attr_html: :width 500
+[[./img/Sierpinski_tetrahedron.jpg]]
+
+Som en lille "smagsprøve" ud i rekursion og fraktaler skal I bygge Sierpinskis tetrahedron vha spaghetti og skumfiduser i stedet for i karton.
+
+** Fremgangsmåde for enkeltpersoner
+1. Hver person skal i første omgang bruge mindst *12 spaghettier* og mindst *10 skumfiduser*.
+2. Byg nu en simpel pyramide af *6 spaghettier* og *4 skumfiduser*. Den skal gerne ligne billedet nedenfor.
+   
+   #+attr_html: :width 500
+   [[./img/byggeblok_tetrahedron.png]]
+  
+4. Hver spaghetti skal nu *knækkes på midten*. Der, hvor spaghettierne er knækket, skal der indsættes nye skumfiduser til at holde på spaghettierne. *Indsæt yderligere halve spaghettier mellem de nye skumfiduser, så den oprindelige pyramide omdannes til 4 mindre pyramider, hvor den ene pyramide står oven på de tre andre.* Se byggevejledningen nedenfor.
+
+   #+attr_html: :width 1000
+   [[./img/Tetrahedron_byggevejledning.png]]
+
+5. Hvis man har mod på det, kan man dele spaghettierne endnu en gang og sætte nye skumfiduser og ekstra stykker spaghettierne ind. Det er dog ikke et krav, men bare en udfordring.
+
+** Fremgangsmåde for 4 personer
+1. Dan nu grupper af 4 personer med hver sin Sierpinski tetrahedron.
+2. Saml de 4 tetrahedroner til én endnu større tetrahedron. Se det endelige mål. Der er tale om en samarbejdsøvelse. Der skal fjernes nogle skumfiduser fra hver tetrehedron, når de skal samles til en stor.
+   #+attr_html: :width 1000
+   [[./img/Tetrahedron_samlet.png]]
+3. Hvis I har nok tetrahedroner, kan I forsøge at samle dem til en endnu større tetrahedron.
+
+* Rekursion i matematik
+** Fakultet
+I matematik findes fakultetsoperatoren, som kan skrives op på følgende måde:
+
+\begin{align*}
+n! = \prod_{i=1}^{i=n} i \, \text{ for } \left\{ n \in \mathbb{N} \vert n \geq 1\right\}
+\end{align*}
+
+Men hvad betyder det lige?
+
+Jo, man vælger et tal $n$, og så ganger man 1 med 2 med 3 osv hele vejen op til sit valgte tal $n$. Dette kan skrives på følgende måde
+
+\begin{align*}
+n! = 1\cdot 2 \cdot 3 \cdots  (n-2) \cdot (n-1) \cdot n\, \text{ for } \left\{ n \in \mathbb{N} \vert n \geq 1\right\}
+\end{align*}
+
+For eksempel kan man bestemme $5!$ på følgende måde:
+
+\begin{align*}
+5! = 1 \cdot 2 \cdot 3 \cdot 4 \cdot 5= 120\,.
+\end{align*}
+
+*I kan nu selv prøve med nogle andre valg af $n$.*
+
+En interessant egenskab ved fakultet er, at følgende sammenhæng er gældende:
+
+\begin{align*}
+\boxed{n! = n \cdot \left( n-1 \right)!}
+\end{align*}
+
+*I kan jo lige prøve det af.* Tjek lige om dette er sandt:
+
+\begin{align*}
+5! &\stackrel{?}{=} 5 \cdot (5-1)! \\
+5! &\stackrel{?}{=} 5 \cdot 4! 
+\end{align*}
+
+Som en ekstra bemærkning skal det nævnes, at man i matematikken har valgt at /definere/ $0! = 1$.
+*** Programmering af fakultet i =python=
+Ved hjælp af den markerede ligning for fakultet er det muligt at udvikle sin egen fakultetsfunktion i et programmeringssprog. I den nedenstående kodestump ses, hvordan fakultet kan implementeres i programmeringssproget =python=. Der er tale om en *rekursiv* implementering, hvor funktionen =fakultet= kalder sig selv. Denne konstruktion vil I se mange flere gange.
+
+#+begin_src python -n :exports both :results output :eval never-export :comments link :tangle fakultet.py
+# Her defineres funktionen fakultet
+def fakultet(tal):
+    if tal < 0: #Her tjekkes det om tallet er positivt.
+        return "Tallet skal være positivt."
+    elif tal == 0: #Her sørges der for at 0! = 1
+        return 1
+    else:
+        if isinstance(tal, int): #Her tjekkes det at tallet er et heltal
+            return tal*fakultet(tal-1) #Læg mærke til at funktionen kalder sig selv. Det kaldes rekursion.
+        else:
+            return "Tallet skal være et heltal."
+# Prøv at ændre værdien af n og se, hvad der sker.
+n=5
+print(fakultet(n))
+#+end_src
+
+- *I kan finde koden i python-appletten nederst på siden her.*
+- *Kør koden og tjek at det virker korrekt.*
+- *Prøv nogle andre værdier af $n$ af, ved at ændre i koden.*
+** Fibonacci-serien
+I kender måske allerede den berømte Fibonacci-serie. Hvis ikke, så kommer der her en kort beskrivelse:
+
+- Man lægger de to forrige tal sammen for at få det næste tal i serien.
+
+- Man starter med tallet 0 (nul), og da der ikker er et andet tal at lægge til, får man bare 0 (nul) ud igen.
+
+- Efterfølgende tager man tallet 1 og lægger til det forrige tal, altså 0 (nul). Man får altså (igen) tallet 1.
+
+- Nu kan man bare fortsætte med at lægge de to forrige tal sammen for at få det næste tal i serien. Man gør dette op til $n$ gange.
+  
+
+Her er et eksempel:
+
+Lad os sige at $n=5$, så bliver serien som følger
+
+0, 1, 1, 2, 3, 5
+
+
+- *Prøv selv med andre værdier af $n$.*
+
+I den følgende kodestump at I se en mulig implementering af en rekursiv fibonacci-funktion skrevet i python.
+
+#+begin_src python -n :exports both :results output :eval never-export :comments link :tangle fibonacci.py
+# Dette er definitionen på en funktion, som hedder fibonacci.
+
+def fibonacci(n):
+    if n < 0: # Her tjekkes det, at brugeren ikke indsætter negative tal.
+        return "n skal være større end eller lig med nul."
+    if n == 0: # Her sørges der får, at man får 0 ud, hvis man vælger n=0
+        return 0
+    elif n == 1 or n == 2: # Her sikres det, at man får 1 ud for n=1 og n=2
+        return 1
+    else: 
+        # Her kan man se, at funktionen fibonacci kalder sig selv.
+        # Denne konstruktion inden for programmering kaldes rekursion.
+        return fibonacci(n-2) + fibonacci(n-1) 
+
+# Prøv at ændre n til et andet tal
+n = 3
+print(fibonacci(n))
+#+end_src
+
+- *Slet, hvad I har stående i forvejen i python-appletten nederst på siden, og erstat koden med den viste kode.*
+- Leg med koden (ved at ændre på n) og tjek, at den gør, som I forventer.
+
+** Python-applet til kode
+#+begin_export html
+<iframe src="https://trinket.io/embed/python/95b2e7fd27a2" width="100%" height="600" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+#+end_export
+
+* Tegn et træ
+** Tegn et træ
+Hvad består et træ af?
+
+#+attr_html: :width 500
+[[./img/binary-palm-tree.png]]
+
+Ja, det består jo af en stamme, nogle grene og endnu flere kviste.
+
+På det viste træ kan man se, at antallet af gene (forgreninger) fordobles efterhånden, som man bevæger sig længere op ad træet. Det ser også ud til, at træet grene spillets med ca 60 grader for hver splitning. Endelig ser det også nogenlunde ud til, at de nye grene er lige så lange som de forrige grene.
+
+Lad os se, om I kan følge en algoritme til at tegne et træ, så ligner det viste. Imens skal I dog holde øje med et tal, som vi kalder *dybde*.
+
+*Algoritmen*
+- Hvis *dybden* er 0 (nul), så skal I ikke tegne noget.
+- Hvis *dybden* er 1, skal I tegne en stamme/en gren.
+- Hvis *dybden* er 2, skal I tegne to nye grene for enden af den forrige stamme/gren. De nye grene skal have samme længde som den forrige stamme/gren og vinklen mellem de nye grene skal være 60 grader.
+- Hvis *dybden* er større end 2 skal I gentage det forrige punkt i algoritmen.
+
+
+*Hvordan kommer jeres træ til at se ud med en dybde på 4?*
+
+*Hvad skal dybden af jeres træ være, for at det har lige så mange grene til slut, som det viste træ i toppen af denne side?*
+** Tegn et træ med computeren
+Den følgende kodestump viser en mulig måde at tegne et træ på, som anvender rekursion. Det gør altså i princippet det samme, som I gjorde i jeres algoritme. Koden er allerede kopieret ind i den tilhørende python-applet nederst på siden.
+
+*Kør i første omgang koden og se, hvad der sker.*
+
+
+#+begin_src python -n :exports both :results none :eval never-export :comments link :tangle trae.py
+import turtle
+import math
+import time
+
+BREDDE = 800
+HOEJDE = 400
+
+def tegn_trae(turtle, laengde, vinkel_v, vinkel_h, skalering, dybde):
+    # Regnbuens farver
+    farver = ["red", "orange", "yellow", "green", "blue", "indigo", "purple"]
+    if dybde > 0:
+        # I kan ændre farven på træet på den næste linje
+        turtle.color("black") 
+        # Hvis træet skal skifte farve, så sæt hashtag foran forrige linje og fjern det fra den næste
+        # turtle.color(farver[dybde%len(farver)])
+        turtle.down()
+        turtle.forward(laengde)
+        turtle.left(vinkel_v)
+        tegn_trae(turtle, laengde*skalering, vinkel_v, vinkel_h, skalering, dybde-1)
+        turtle.right(vinkel_v + vinkel_h)
+        tegn_trae(turtle, laengde*skalering, vinkel_v, vinkel_h, skalering, dybde-1)
+        turtle.left(vinkel_h)
+        turtle.up()
+        turtle.backward(laengde)
+    else:
+        return
+
+# Opsætning
+skaerm = turtle.Screen()
+skaerm.setup(BREDDE, HOEJDE)
+t = turtle.Turtle()
+t.hideturtle()
+t.speed(0)
+skaerm.tracer(1) #Ændr til et større tal, hvis animationen tager for lang tid
+# Opsætning slut
+
+t.left(90)
+t.up()
+t.goto(0,-200)
+t.down()
+dybde = 2
+skalering = 1.0
+laengde = 80
+vinkel_venstre = 30
+vinkel_hoejre = 30
+tegn_trae(t, laengde, vinkel_venstre, vinkel_hoejre, skalering, dybde)
+skaerm.mainloop()        
+#+end_src
+
+*Eksperimenter nu med at ændre på koden. Prøv f.eks. følgende af:*
+
+- Flyt roden af træet til en anden position. (Dette kan gøres med =t.goto=)
+- Ændre længden af stammen/grenene.
+- Se, hvad der sker, hvis I ændre skaleringen til f.eks 0.7.
+- Hvad sker der, hvis I ændre på =vinkel_venstre= og =vinkel_hoejre=?
+- Kan I få jeres træ til at ligne dette træ, som står ved vesterhavet i Jylland?
+  #+attr_html: :width 500
+  [[./img/trae_vestenvind.jpg]]
+
+** Python-applet til kode
+#+begin_export html
+<iframe src="https://trinket.io/embed/python/5a8467e9850d" width="100%" height="600" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+#+end_export
+
+* Koch-kurven
+** Introduktion
+En af de tidligste *fraktaler* er Koch-kurven. Den blev set omtalt første gang i 1904 af den svenske matematiker Helge von Koch.
+
+Algoritmen er ganske simpel. Den lyder som følger:
+1. Tegn først en linje.
+2. Del linjen i 3 lige store dele.
+3. Fjern den midterste del af linjen.
+4. Erstat den fjernede del af af linjen med to af benene i en ligesidet trekant som har samme sidelængder som den fjernede del.
+5. Tag nu hver enkelt linje i den nye figur og udfør de samme operationer som i de forrige skridt.
+6. Fortsæt på denne måde et selvvalgt antal gange.
+
+
+I kan se, hvordan en Koch-kurve ser ud efter de de 4 første skridt i algoritmen.
+
+#+attr_html: :width 500
+[[./img/Kochkurve_introduktion.png]]
+
+
+- *Tegn jeres egen Koch-kurve på et stykke papir.*
+- *Hvordan ser jeres Koch-kurve ud efter 2 og 3 gentagelser (dybder)?*
+** Koch-kurven tegnet vha python
+Følgende kode tegner en Koch-kurve. Igen er der anvendt rekursion. Koden er til at starte med kopieret ind i den tilhørende python-applet nederst på siden.
+
+#+begin_src python -n :exports both :results none :eval never-export :comments link :tangle koch_kurve.py
+import turtle
+import math
+import time
+
+BREDDE = 800
+HOEJDE = 400
+
+def afstand(punkt1, punkt2):
+    x1, y1 = punkt1
+    x2, y2 = punkt2
+    return ((x2-x1)**2 + (y2-y1)**2)**0.5
+
+def tegn_linje(turtle, punkt_1, punkt_2, farve):
+    turtle.color(farve)
+    turtle.up()
+    turtle.goto(*punkt_1)
+    turtle.down()
+    turtle.goto(*punkt_2)
+    turtle.up()
+                   
+def koch_kurve(turtle, punkt1, punkt2, farve, dybde):
+    x1, y1 = punkt1
+    x2, y2 = punkt2
+    afstand_p1_p2 = afstand(punkt1, punkt2)
+    ny_afstand = afstand_p1_p2 / 3
+    vinkel_p1_p2 = math.atan2(y2-y1,x2-x1)
+    if dybde > 0:
+        punkt5 = punkt2
+        x2 = x1 + ny_afstand * math.cos(vinkel_p1_p2)
+        y2 = y1 + ny_afstand * math.sin(vinkel_p1_p2)
+        punkt2 = [x2, y2]
+        x3 = x2 + ny_afstand * math.cos(vinkel_p1_p2+math.radians(60))
+        y3 = y2 + ny_afstand * math.sin(vinkel_p1_p2+math.radians(60))
+        punkt3 = [x3, y3]
+        x4 = x3 + ny_afstand * math.cos(vinkel_p1_p2-math.radians(60))
+        y4 = y3 + ny_afstand * math.sin(vinkel_p1_p2-math.radians(60))
+        punkt4 = [x4, y4]
+        koch_kurve(turtle, punkt1, punkt2, farve, dybde -1)
+        koch_kurve(turtle, punkt2, punkt3, farve, dybde -1)
+        koch_kurve(turtle, punkt3, punkt4, farve, dybde -1)
+        koch_kurve(turtle, punkt4, punkt5, farve, dybde -1)
+    else:
+        tegn_linje(turtle, punkt1, punkt2, farve)
+    
+# Opsætning
+skaerm = turtle.Screen()
+skaerm.setup(BREDDE, HOEJDE)
+t = turtle.Turtle()
+t.hideturtle()
+t.speed(0)
+skaerm.tracer(1) #Ændr til et større tal, hvis animationen tager for lang tid
+# Opsætning slut
+
+dybde = 2
+p1 = [-200,-100]
+p2 = [200,-100]
+farve = "black"
+
+koch_kurve(t, p1, p2, farve, dybde)
+skaerm.mainloop()        
+#+end_src
+
+
+- *Eksperiment med koden*
+- *Flyt rundt på de to punkter. Ændr farven.*
+- *Ændr på dybden og se, hvad der sker.*
+- *Få jeres Koch-kurve til at gøre følgende*
+  [[./img/koch_animation.gif]]
+
+  Det kan man gøre ved at skrive følgende nederst i koden:
+
+  #+begin_src python -n 52 :exports both :results none :eval never-export
+  # Opsætning slut
+
+  dybde = 2
+  p1 = [-200,-100]
+  p2 = [200,-100]
+  farve = "black"
+
+  # koch_kurve(t, p1, p2, farve, dybde)
+  
+  skaerm.tracer(0)
+  for dybde in range(3):
+      t.clear()
+      koch_kurve(t, p1, p2, farve, dybde)
+      skaerm.update()
+      time.sleep(1)
+  
+  skaerm.mainloop()        
+  #+end_src
+  
+- *Få jeres program til at tegne tre Koch-kurver efter hinanden, så det ligner et snefnug. Her er det vist for dybder på henholdsvis 0, 1, 2 og 3.*
+  [[./img/KochSnowflake.svg]]
+** Python-applet til kode
+#+begin_export html
+<iframe src="https://trinket.io/embed/python/f65cc6058583" width="100%" height="600" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+#+end_export
+* Levy C-kurven
+** Introduktion
+Et andet sjovt eksempel på en fraktal er Levy C-kurven. Algoritmen starter også med en ret linje.
+
+*Algoritme*:
+1. Tegn en ret linje.
+2. Den rette linje skal nu udskiftes af to af benene i en ligebenet trekant med vinklerne 45 grader, 90 grader og 45 grader. *Hypotenusen* i den nye ligebenede trekant skal have samme længde som den oprindelige linje.
+3. Gentag forrige skridt for hver ny linje for hver ny dybde.
+
+
+*Opgaver:*
+1. Overbevis jer selv om, at de 8 første udgaver af Levy C-kurven ser ud på følgende måde:
+   [[./img/Levy_C_construction.png]]
+2. Benyt Pythagoras' læresætning til at beregne længderne af de nye linjer (kateterne i trekanten) ud fra den gamle længde.
+** Levy C-kurven tegnet vha python
+Følgende kode kan bruges til at tegne Levy C-kurven. Den er allerede indsat i den tilhørende python-applet. *Leg med den!*
+#+begin_src python -n :exports both :results none :eval never-export :comments link :tangle levy_c_kurve.py
+import turtle
+import math
+import time
+
+BREDDE = 800
+HOEJDE = 400
+
+def tegn_linje(turtle, punkt_1, punkt_2, farve):
+    turtle.color(farve)
+    turtle.up()
+    turtle.goto(*punkt_1)
+    turtle.down()
+    turtle.goto(*punkt_2)
+    turtle.up()
+
+def afstand(punkt1, punkt2):
+    x1, y1 = punkt1
+    x2, y2 = punkt2
+    return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+
+def levy_c_kurve(turtle, punkt1, punkt2, farve, dybde):
+
+    if dybde > 0:
+        laengde = afstand(punkt1, punkt2) / 2**0.5
+        x1, y1 = punkt1
+        x2, y2 = punkt2
+        vinkel_mellem_punkt1_og_punkt2 = math.atan2((y2 - y1), (x2 - x1))
+        nyt_punkt = [
+	    punkt1[0]
+            + laengde * math.cos(math.radians(-45) + vinkel_mellem_punkt1_og_punkt2),
+            punkt1[1]
+            + laengde * math.sin(math.radians(-45) + vinkel_mellem_punkt1_og_punkt2),
+            ]
+        levy_c_kurve(turtle, punkt1, nyt_punkt, farve, dybde - 1)
+        levy_c_kurve(turtle, nyt_punkt, punkt2, farve, dybde - 1)
+    else:
+        tegn_linje(turtle, punkt1, punkt2, farve)
+
+# Opsætning
+skaerm = turtle.Screen()
+skaerm.setup(BREDDE, HOEJDE)
+t = turtle.Turtle()
+t.hideturtle()
+t.speed(0)
+skaerm.tracer(1) #Ændr til et større tal, hvis animationen tager for lang tid
+# Opsætning slut
+
+dybde = 4
+p1 = [-100, 100]
+p2 = [100, 100]
+farve = "black"
+
+levy_c_kurve(t, p1, p2, farve, dybde)
+skaerm.mainloop()
+#+end_src
+
+- *Eksperimenter med koden.*
+- *Flyt rundt på endepunkterne for kurven.*
+- *Ændre på dybden og se, hvad der sker.*
+- *Hvis I vil have en animation af kurven med voksende dybde, så indsæt følgende bunden af jeres kode:*
+#+begin_src python -n 46 :exports both :results none :eval never-export
+# Opsætning slut
+
+dybde = 4
+p1 = [-100, 100]
+p2 = [100, 100]
+farve = "black"
+
+# levy_c_kurve(t, p1, p2, farve, dybde)
+
+for dybde in range(10):
+    t.clear()
+    skaerm.tracer(0)
+    levy_c_kurve(t, p1, p2, farve, dybde)
+    skaerm.update()
+    time.sleep(0.5)
+
+skaerm.mainloop()
+#+end_src
+
+
+** Python-applet til kode
+#+begin_export html
+<iframe src="https://trinket.io/embed/python/af9467c56931" width="100%" height="600" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+#+end_export
+* Sierpinskis trekant
+** Introduktion
+I har allerede bygget Sierpinskis tetrahedron vha. spaghetti og skumfiduser. Hvis man "bare" vil tegne noget som ligner den, så kan man arbejde med Sierpinskis *trekant*. Algoritmen er som følger:
+
+*Algoritmne:*
+1. Tegn en (ligesidet) trekant med en given størrelse.
+2. Halvér hver af siderne i trekanten og forbind halveringstederne med nye linjer, så der dannes nye trekanter. Ignorer trekanten i midten.
+3. Gør det samme for de nydannede trekanter (i hjørnerne).
+4. Stop efter en ønsket dybde.
+
+Det skal meget gerne se nogenlunde sådan her ud for dybderne 1 til 5:
+
+[[./img/sierpinsky_trekant.png]]
+
+** Sierpenskis trekant tegnet vha python
+Sierpinskis oprindelige trekant er en ligesidet trekant, men princippet virker også for *vilkårlige trekanter*.
+
+Den følgende kode kan tegne Sierpinskis trekant for vilkårlige trekanter. Man skal bare selv vælge koordinaterne til hjørnerne i trekanten. Som altid er koden allerede kopieret ind i den tilhørende python-applet nederst på siden.
+#+begin_src python -n :exports both :results output :eval never-export :comments link :tangle sierpinsky_trekant.py
+import turtle
+
+BREDDE = 800
+HOEJDE = 400
+
+def midtpunkt(hjoerne_1, hjoerne_2):
+    hjoerne_1_x, hjoerne_1_y = hjoerne_1
+    hjoerne_2_x, hjoerne_2_y = hjoerne_2
+    midtpunkt_x = (hjoerne_1_x + hjoerne_2_x)/ 2
+    midtpunkt_y = (hjoerne_1_y + hjoerne_2_y)/ 2
+    return (midtpunkt_x, midtpunkt_y)
+
+def tegn_trekant(turtle, hjoerner, farve):
+    turtle.fillcolor(farve)
+    turtle.begin_fill()
+    for i in range(len(hjoerner)+1):
+        turtle.goto(*hjoerner[i % len(hjoerner)])
+    turtle.end_fill()
+    
+def sierpinski(turtle, hjoerner, dybde):
+    # Regnbuens farver
+    farver = ["red", "orange", "yellow", "green", "blue", "indigo", "purple"]
+    
+    tegn_trekant(turtle, hjoerner,farver[dybde%len(farver)])
+    
+    if dybde > 0:
+        for i in range(len(hjoerner)):
+            nye_hjoerner = [hjoerner[i], midtpunkt(hjoerner[i],hjoerner[(i+1)%len(hjoerner)]),midtpunkt(hjoerner[i],hjoerner[i-1])]
+            sierpinski(turtle, nye_hjoerner,dybde -1)
+    
+# Opsætning
+skaerm = turtle.Screen()
+skaerm.setup(BREDDE, HOEJDE)
+t = turtle.Turtle()
+t.hideturtle()
+t.speed(0)
+t.up()
+skaerm.tracer(1) #Ændr til et større tal, hvis animationen tager for lang tid
+# Opsætning slut
+
+hjoerne_1 = [-150,-100]
+hjoerne_2 = [150,-100]
+hjoerne_3 = [0, 160]
+hjoerner = [hjoerne_1, hjoerne_2, hjoerne_3]
+
+dybde = 2
+
+sierpinski(t, hjoerner, dybde)
+
+skaerm.mainloop()
+#+end_src
+
+- *Eksperimenter med hjørnenes placering og med dybden.*
+
+
+Hvis I vil se en animation af trekanten til forskellige dybder kan i erstatte bunden af jeres kode med følgende:
+
+#+begin_src python -n 39 :exports both :results none :eval never-export
+# Opsætning slut
+
+hjoerne_1 = [-150,-100]
+hjoerne_2 = [150,-100]
+hjoerne_3 = [0, 160]
+hjoerner = [hjoerne_1, hjoerne_2, hjoerne_3]
+
+dybde = 2
+
+# sierpinski(t, hjoerner, dybde)
+
+skaerm.tracer(0)
+for dybde in range(3):
+    t.clear()
+    koch_kurve(t, p1, p2, farve, dybde)
+    skaerm.update()
+    time.sleep(1)
+
+skaerm.mainloop()        
+#+end_src
+
+
+** Python-applet til kode
+#+begin_export html
+<iframe src="https://trinket.io/embed/python/f3e761a4aa8d" width="100%" height="600" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+#+end_export
+* HTX
+Her er der noget dejlig kode. Den er allerede kopieret ind i python-appletten.
+
+- *Eksperimenter med koden.*
+- *Kan I gennemskue, hvad koden gør?*
+#+begin_src python -n :exports both :results output :eval never-export :comments link :tangle htx.py
+import turtle
+
+BREDDE = 800
+HOEJDE = 600
+
+def tegn_linje(turtle, punkt_1, punkt_2, farve):
+    turtle.color(farve)
+    turtle.up()
+    turtle.goto(*punkt_1)
+    turtle.down()
+    turtle.goto(*punkt_2)
+    turtle.up()
+
+def tegn_H(turtle, centrum, bredde, hoejde,skalering, dybde):
+    x,y = centrum
+    oppe_venstre = [x- bredde/2, y+hoejde/2]
+    nede_venstre = [x-bredde/2,y-hoejde/2]
+    oppe_hoejre = [x+ bredde/2, y+hoejde/2]
+    nede_hoejre = [x+bredde/2,y-hoejde/2]
+    
+    tegn_linje(turtle,[x-bredde/2,y],[x+bredde/2, y],farver[dybde%len(farver)])
+    tegn_linje(turtle, oppe_venstre, nede_venstre,farver[dybde%len(farver)])
+    tegn_linje(turtle, oppe_hoejre, nede_hoejre,farver[dybde%len(farver)])
+    turtle.goto(centrum)
+
+    if dybde > 0:
+        for hjoerne in [oppe_venstre, nede_venstre, oppe_hoejre, nede_hoejre]:
+            tegn_H(turtle, hjoerne, bredde*skalering, hoejde*skalering,skalering, dybde-1)
+
+def tegn_T(turtle, centrum, bredde, hoejde, skalering, dybde):
+    x,y = centrum
+    oppe_venstre = [x- bredde/2, y+hoejde/2]
+    oppe_hoejre = [x+ bredde/2, y+hoejde/2]
+    nede_midt_for= [x,y-hoejde/2]
+    oppe_midt_for = [x, y+hoejde/2]
+    tegn_linje(turtle,nede_midt_for, oppe_midt_for, farver[dybde%len(farver)])
+    tegn_linje(turtle,oppe_venstre, oppe_hoejre, farver[dybde%len(farver)])
+    turtle.goto(centrum)
+
+    if dybde > 0:
+        for ende in [oppe_venstre, oppe_hoejre, nede_midt_for]:
+            tegn_T(turtle, ende, bredde*skalering, hoejde*skalering, skalering, dybde-1)
+
+def tegn_X(turtle, centrum, bredde, hoejde, skalering, dybde):
+    x,y = centrum
+    oppe_venstre = [x- bredde/2, y+hoejde/2]
+    oppe_hoejre = [x+ bredde/2, y+hoejde/2]
+    nede_venstre= [x-bredde/2,y-hoejde/2]
+    nede_hoejre= [x+bredde/2,y-hoejde/2]
+    tegn_linje(turtle,oppe_venstre, nede_hoejre, farver[dybde%len(farver)])
+    tegn_linje(turtle,oppe_hoejre, nede_venstre, farver[dybde%len(farver)])
+    turtle.goto(centrum)
+
+    if dybde > 0:
+        for ende in [oppe_venstre, oppe_hoejre, nede_venstre, nede_hoejre]:
+            tegn_X(turtle, ende, bredde*skalering, hoejde*skalering, skalering, dybde-1)
+
+# Opsætning
+skaerm = turtle.Screen()
+skaerm.setup(BREDDE, HOEJDE)
+farver = ["blue","green", "red"]
+turtles =[]
+for _ in range(3):
+    t = turtle.Turtle()
+    t.hideturtle()
+    t.speed(0)
+    turtles.append(t)
+skaerm.tracer(0)
+# Opsætning slut
+
+dybde = 0
+skalering = 0.5
+
+tegn_H(turtles[0], (-100,0),50,100,skalering,dybde)
+tegn_T(turtles[1], (0,0),50,100,skalering,dybde)
+tegn_X(turtles[2], (100,0), 50, 100, skalering,dybde)
+
+skaerm.update()
+skaerm.mainloop()
+#+end_src
+
+** Python-applet til kode
+#+begin_export html
+<iframe src="https://trinket.io/embed/python/e3fe946459fe" width="100%" height="600" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+#+end_export
